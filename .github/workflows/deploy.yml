@@ -11,7 +11,7 @@ env:
   SERVICE_NAME: gb-test 
   REGION: us-west1
   IMAGE_NAME: gb-test-image-name
-  GCP_WIF_PROVIDER: projects/852094853748/locations/global/workloadIdentityPools/github-action-idpool/providers/GitHub-provider
+  GCP_WIF_PROVIDER: projects/852094853748/locations/global/workloadIdentityPools/github-action-idpool/providers/github-actions
   GCP_SERVICE_ACCOUNT: github-actions-deployer@grand-eye-476202-n0.iam.gserviceaccount.com
 
 jobs:
