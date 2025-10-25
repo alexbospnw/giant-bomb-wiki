@@ -1,0 +1,47 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+# Define environment variables for your project
+env:
+  PROJECT_ID: grand-eye-476202-n0 
+  SERVICE_NAME: gb-test 
+  REGION: us-west1
+  IMAGE_NAME: gb-test-image-name
+  GCP_WIF_PROVIDER: projects/852094853748/locations/global/workloadIdentityPools/github-action-idpool/providers/GitHub-provider
+  GCP_SERVICE_ACCOUNT: github-actions-deployer@grand-eye-476202-n0.iam.gserviceaccount.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Build and push container image'
+        run: |
+          gcloud auth configure-docker ${REGION}-docker.pkg.dev
+          gcloud builds submit --tag ${REGION}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+
+      - name: 'Deploy to Cloud Run'
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image=${REGION}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            --region=${{ env.REGION }} \
+            --platform=managed
