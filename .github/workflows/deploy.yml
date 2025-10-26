@@ -13,7 +13,7 @@ env:
   IMAGE_NAME: gb-test-image-name
   GCP_WIF_PROVIDER: projects/852094853748/locations/global/workloadIdentityPools/github-action-idpool2/providers/github-actions
   GCP_SERVICE_ACCOUNT: github-actions-deployer@grand-eye-476202-n0.iam.gserviceaccount.com
-  test: test
+  test: test2
 
 jobs:
   deploy:
